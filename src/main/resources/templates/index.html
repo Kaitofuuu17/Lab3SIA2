@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+
+        body{
+            background-color: #181C14;
+        }
+
+        h1,h2{
+            color: #ECDFCC;
+            text-align: center;
+        }
+
+        th{
+            color: #ECDFCC;
+        }
+
+
+        .container{
+            width: 900px;
+            background: transparent;
+            border: 2px solid #198754;
+            backdrop-filter: blur(30px);
+            color: #198754;
+            border-radius: 15px;
+            padding: 30px 40px;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0px 0px 10px 0px #198754;
+        }
+
+        .btn-primary{
+            background-color: #198754;
+            color: #181C14;
+        }
+
+        
+        .btn-primary:hover{
+            background-color: #181C14;
+        }
+
+        .btn-danger{
+            margin: 0%;
+        }
+
+
+    </style>
+    
+</head>
+
+<body>
+
+    <h1>LAB 3: To-do Web Application</h1>
+    <h2>Submitted by: Obieta Antoine Jusherand M.</h2>
+    <hr />
+<div class="container">
+
+     <!-- Filter Form -->
+     <form method="get" action="/filter">
+        <div class="row mb-3">
+            <div class="col">
+                <input type="text" name="taskDescription" placeholder="Task Description" class="form-control">
+            </div>
+            <div class="col">
+                <select name="personId" class="form-control">Person
+                    <option value="">All Person(s)</option>
+                    <th:block th:each="person : ${persons}">
+                        <option th:value="${person.id}" th:text="${person.name}"></option>
+                    </th:block>
+                </select>
+            </div>
+            <div class="col">
+                <select name="isComplete" class="form-control">
+                    <option value="">Status</option>
+                    <option value="true">Completed</option>
+                    <option value="false">Not Completed</option>
+                </select>
+            </div>
+            <div class="col">
+                <input type="date" name="completionDate" placeholder="Completion Date" class="form-control">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+    
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Person</th>
+            <th>Description</th>
+            <th>Completion Date</th>
+            <th>Options</th>
+        </tr>
+        </thead>
+    
+        <tbody>
+        <tr th:each="item : ${todoItems}" th:class="${item.isComplete} ? 'alert alert-success' : 'alert alert-warning'">
+            
+            <td th:text="${item.id}"></td>
+            <td>
+                <span th:text="${item.person.name}" th:if="${item.person}"></span>
+                <span th:if="${item.person == null}">No person assigned</span>
+            </td>
+            <td th:text="${item.description}"></td>
+            <td th:text="${item.completionDate != null ? item.completionDate : 'No Date Set'}"></td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="form-check me-4">
+                        <input class="form-check-input" type="checkbox" th:id="${item.id}" 
+                               th:value="${item.id}" th:checked="${item.isComplete}" 
+                               onchange="toggleRowColor(this)">
+                        <label class="form-check-label" th:for="${item.id}">
+                            Finished
+                        </label>
+                    </div>
+                    <a class="btn btn-danger" th:href="@{/delete/{id}(id=${item.id})}">
+                        <i class="bi bi-trash-fill"></i> delete
+                    </a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table> 
+    <hr />
+    <p><a class="btn btn-outline-success" href="/create-todo">
+        <i class="bi bi-plus-square-fill"></i> Add</a>
+    </p>
+</div>
+
+
+
+<script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
+
+<script type="text/javascript">
+    function toggleRowColor(checkbox) {
+        const row = checkbox.closest('tr');
+        const todoId = checkbox.value;
+        const isComplete = checkbox.checked;
+
+        // Update the UI immediately for user feedback
+        if (isComplete) {
+            row.classList.add('task-complete');
+            row.classList.remove('task-incomplete');
+        } else {
+            row.classList.add('task-incomplete');
+            row.classList.remove('task-complete');
+        }
+
+        // Send the update to the server
+        fetch(`/api/todos/${todoId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isComplete: isComplete }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // Optionally reload the page to reflect changes
+            location.reload();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+</body>
+</html>

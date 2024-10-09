@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css}" />
+
+    <style>
+
+        body{
+            
+            background-color: #181C14;
+        }
+
+        h2{
+            margin-top: 20px;
+            color: #ECDFCC;
+            text-align: center;
+        }
+
+        th{
+            color: #ECDFCC;
+        }
+
+
+        .form-group{
+            margin: auto;
+            width: 900px;
+            background: transparent;
+            border: 2px solid #198754;
+            backdrop-filter: blur(30px);
+            color: #198754;
+            border-radius: 15px;
+            padding: 30px 40px;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0px 0px 10px 0px #198754;
+            display: block;
+            
+        }
+
+        label{
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+
+        .btn[type="submit"], .btn-outline-secondary{
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #198754;
+            border-color: #198754;
+        }
+
+        .btn[type="submit"]:hover, .btn-outline-secondary:hover{
+            background-color: #198754;
+            color: #181C14;
+        }
+
+        .col-2{
+            display: inline-block;
+            justify-content: center;
+        }
+
+        .form-control:hover{
+            border: 2px solid #198754;
+            border-color: #198754;
+            box-shadow: 0px 0px 10px 0px #198754;
+        }
+
+       
+
+        
+
+
+    </style>
+
+
+</head>
+<body>
+    <h2>Add To-do</h2>
+    
+    <hr />
+           
+
+            <form action="#" th:action="@{/todo}" th:object="${todoItem}" method="POST">
+                <div class="form-group mt-3">
+
+                    <label for="personSelect">Select Person</label>
+                    <select class="form-control" th:field="*{person}" required>
+                        <option value=""></option> <!-- Placeholder option -->
+                        <th:block th:each="person : ${persons}">
+                            <option th:value="${person.id}" 
+                                    th:text="${person.name}" 
+                                    th:selected="${person.id == selectedPersonId}"></option>
+                        </th:block>
+                    </select>
+                    <a th:href="@{/add-person(description=${todoItem.description}, selectedPersonId=${selectedPersonId})}" class="btn btn-outline-secondary mt-2">
+                        Add New Person
+                    </a> <br />
+
+                    <label for="description">Task Description</label>
+                    <input class="form-control" type="text" th:field="*{description}" id="description" placeholder="Description" th:value="${todoItem.description}">
+
+                    <label for="completionDate">Completion Date</label>
+                    <input class="form-control" type="date" th:field="*{completionDate}" id="completionDate" placeholder="Completion Date">
+
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-square-fill"></i> Add Task
+                    </button>
+
+                </div>
+                
+        
+            </form>
+            
+            </form>
+    
+<script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
+</body>
+</html>
